@@ -35,12 +35,14 @@ body {
     position: relative;
     top: 50%;
     font-family: Montserrat;
+    font-size: 1em;
     font-weight: 100;
     transform: translateY(-50%);
+    user-select: none;
 }
 
 .align-block {
-    width: 50%;
+    width: 100%;
     height: 100%;
     background: transparent;
 }
@@ -67,7 +69,7 @@ body {
     flex-direction: column;
     margin: 2px;
     background: transparent;
-    width: 35%;
+    width: 100%;
 }
 
 .hour-header-item {
@@ -80,39 +82,42 @@ body {
 .hour-header-item h5 {
     color: black;
     margin: 0;
-    text-align: center;
+    text-align: right;
     vertical-align: middle;
     position: relative;
     top: 50%;
     font-family: Montserrat;
+    font-size: 1em;
     font-weight: 100;
     transform: translateY(-50%);
+    padding-right: 10%;
+    user-select: none;
 }
 
 .day {
     display: flex;
     flex-direction: column;
-    margin: 2px;
+    margin: 1px;
     background: transparent;
     width: 100%;
 }
 
 .hour {
-    background: transparent;
-    border: 1px black;
-    border-style: solid;
+    background: #dddddd;
+    margin-bottom: 2px;
     width: 100%;
     height: 100%;
+    user-select: none;
 }
 
 .hover {
-    background: #4b558e;
+    background: #727bad;
 }
 
 .disabled {
-    background: #a6a6a6;
     pointer-events: none;
-    opacity: 0.4;
+    opacity: 0.3;
+    box-shadow: none;
 }
 
 .selected {
