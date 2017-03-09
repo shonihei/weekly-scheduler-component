@@ -3,7 +3,15 @@
 
         var settings = $.extend({
             days: ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
-            hours: "6:00AM-10:00PM", // default time range
+            hours: "7:00AM-10:00PM",
+            fontFamily: "Montserrat",
+            fontColor: "black",
+            fontWeight: "100",
+            fontSize: "0.8em",
+            hoverColor: "#727bad",
+            selectionColor: "#9aa7ee",
+            headerBackgroundColor: "transparent",
+
             onSelected: function(){}, // handler called after selection
             onRemoved: function(){} // handler called after removal
         }, callerSettings||{});
@@ -15,11 +23,7 @@
 
         let schedule = this;
 
-        function test() {
-            console.log("test working");
-        }
-
-        function readData() {
+        function getSelectedHour() {
             let dayContainer = $('.day');
             let output = {};
             for (let i = 0; i < dayContainer.length; i++) {
@@ -38,12 +42,11 @@
 
         if (typeof callerSettings == 'string') {
             switch (callerSettings) {
-                case 'test':
-                    test();
+                case 'getSelectedHour':
+                    return getSelectedHour();
                     break;
-                case 'readData':
-                    return readData();
-                    break;
+                default:
+                    throw 'Weekly schedule method unrecognized!'
             }
         }
         // options is an object, initialize!
@@ -61,6 +64,13 @@
             let dayHeaderContainer = $('<div></div>', {
                 class: "header"
             });
+
+            let align_block = $('<div></div>', {
+                class: "align-block"
+            });
+
+            dayHeaderContainer.append(align_block);
+
             // Insert header items
             for (let i = 0; i < days.length; ++i) {
                 let day_header = $('<div></div>', {
@@ -133,10 +143,16 @@
             $('.header').css({
                 height: "30px",
                 width: "100%",
-                background: "transparent", // option
+                background: settings.headerBackgroundColor,
                 marginBottom: "5px",
                 display: "flex",
                 flexDirection: "row"
+            });
+            $('.align-block').css({
+                width: "100%",
+                height: "100%",
+                background: settings.headerBackgroundColor,
+                margin: "3px"
             });
 
             // Style Header Items
@@ -151,9 +167,10 @@
                 verticalAlign: 'middle',
                 position: "relative",
                 top: "50%",
-                fontFamily: "Montserrat", // Option
-                fontSize: "1em",
-                fontWeight: "100",
+                color: settings.fontColor,
+                fontFamily: settings.fontFamily,
+                fontSize: settings.fontSize,
+                fontWeight: settings.fontWeight,
                 transform: "translateY(-50%)",
                 userSelect: "none"
             });
@@ -162,7 +179,8 @@
                 display: 'flex',
                 flexDirection: 'column',
                 margin: '2px', // option
-                background: 'transparent', // option
+                marginRight: '1px',
+                background: settings.headerBackgroundColor,
                 width: '100%'
             });
 
@@ -184,16 +202,14 @@
                 borderStyle: "none" // option
             });
             $('.hour-header-item h5').css({
-                color: "black", // option
+                color: settings.fontColor,
                 margin: "0", // option
                 textAlign: "right",
                 verticalAlign: "middle",
                 position: "relative",
-                top: "50%",
-                fontFamily: "Montserrat", // option
-                fontSize: "1em", // option
-                fontWeight: "100", // option
-                transform: "translateY(-50%)",
+                fontFamily: settings.fontFamily,
+                fontSize: settings.fontSize,
+                fontWeight: settings.fontWeight,
                 paddingRight: "10%",
                 userSelect: "none"
             });
@@ -201,13 +217,14 @@
             $('.day').css({
                 display: "flex",
                 flexDirection: "column",
-                margin: "1px", // option
+                marginRight: "1px", // option
+                marginBottom: "1px",
                 background: "transparent", // option
                 width: "100%"
             });
             $('.hour').css({
                 background: "#dddddd", // option
-                marginBottom: "2px", // option
+                marginBottom: "1px", // option
                 width: "100%",
                 height: "100%",
                 userSelect: "none"
@@ -217,7 +234,12 @@
              * Hook eventlisteners
              */
 
-            $("<style type='text/css'> .hover { background: #727bad !important;} .selected { background: #9aa7ee !important; } .disabled { pointer-events: none !important; opacity: 0.3 !important; box-shadow: none !important; }</style>").appendTo(schedule);
+            $("<style type='text/css' scoped> .hover { background: "
+                + settings.hoverColor +
+                " !important;} .selected { background: "
+                + settings.selectionColor +
+                " !important; } .disabled { pointer-events: none !important; opacity: 0.3 !important; box-shadow: none !important; }</style>")
+                .appendTo(schedule);
 
             // Prevent Right Click
             $('.schedule').on('contextmenu', function() {
