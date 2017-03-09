@@ -9,11 +9,11 @@ I wanted to make it customizable as well so I will be adding features to initial
 ## Screen shots
 It supports user selection
 
-![Alt text](./sample-images/sample-img1.png)
+![Alt text](./sample-images/sampleimg1.png)
 
 When the user clicks on a specific day, the entire day container will be focused.
 
-![Alt text](./sample-images/sample-img2.png)
+![Alt text](./sample-images/sampleimg2.png)
 
 ## To-Do
 1. Add features to retrieve selected hours
