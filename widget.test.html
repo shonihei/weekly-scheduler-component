@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Weekly Schedule DOM</title>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="jquery.weekly-schedule-plugin.js"></script>
+        <!-- <script src="notsogoodversion.js"></script> -->
+    </head>
+    <body>
+        <div class="container">
+        <style>
+        .container {
+            margin: auto;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+        </style>
+            <div id="target">
+            </div>
+        </div>
+        <script>
+            $('#target').weekly_schedule();
+            $('.schedule').on('selectionmade', function() {
+                console.log("Selection Made");
+            }).on('selectionremoved', function() {
+                console.log("Selection Removed");
+            });
+        </script>
+    </body>
+</html>
