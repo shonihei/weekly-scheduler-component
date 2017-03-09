@@ -2,16 +2,15 @@
     $.fn.weekly_schedule = function(callerSettings) {
 
         var settings = $.extend({
-            days: ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
-            hours: "7:00AM-10:00PM",
-            fontFamily: "Montserrat",
-            fontColor: "black",
-            fontWeight: "100",
-            fontSize: "0.8em",
-            hoverColor: "#727bad",
-            selectionColor: "#9aa7ee",
-            headerBackgroundColor: "transparent",
-
+            days: ["sun", "mon", "tue", "wed", "thu", "fri", "sat"], // Days displayed
+            hours: "7:00AM-10:00PM", // Hours displyed
+            fontFamily: "Montserrat", // Font used in the component
+            fontColor: "black", // Font colot used in the component
+            fontWeight: "100", // Font weight used in the component
+            fontSize: "0.8em", // Font size used in the component
+            hoverColor: "#727bad", // Background color when hovered
+            selectionColor: "#9aa7ee", // Background color when selected
+            headerBackgroundColor: "transparent", // Background color of headers
             onSelected: function(){}, // handler called after selection
             onRemoved: function(){} // handler called after removal
         }, callerSettings||{});
@@ -19,18 +18,18 @@
         settings.hoursParsed = parseHours(settings.hours);
 
         var mousedown = false;
-        var deletionMode = false;
+        var devarionMode = false;
 
-        let schedule = this;
+        var schedule = this;
 
         function getSelectedHour() {
-            let dayContainer = $('.day');
-            let output = {};
-            for (let i = 0; i < dayContainer.length; i++) {
-                let children = $(dayContainer[i]).children();
+            var dayContainer = $('.day');
+            var output = {};
+            for (var i = 0; i < dayContainer.length; i++) {
+                var children = $(dayContainer[i]).children();
 
-                let hoursSelected = [];
-                for (let j = 0; j < children.length; j++) {
+                var hoursSelected = [];
+                for (var j = 0; j < children.length; j++) {
                     if ($(children[j]).hasClass('selected')) {
                         hoursSelected.push(children[j]);
                     }
@@ -51,8 +50,8 @@
         }
         // options is an object, initialize!
         else {
-            let days = settings.days; // option
-            let hours = settings.hoursParsed; // option
+            var days = settings.days; // option
+            var hours = settings.hoursParsed; // option
 
             $(schedule).addClass('schedule');
 
@@ -61,44 +60,44 @@
              */
 
             // Create Header
-            let dayHeaderContainer = $('<div></div>', {
+            var dayHeaderContainer = $('<div></div>', {
                 class: "header"
             });
 
-            let align_block = $('<div></div>', {
+            var align_block = $('<div></div>', {
                 class: "align-block"
             });
 
             dayHeaderContainer.append(align_block);
 
             // Insert header items
-            for (let i = 0; i < days.length; ++i) {
-                let day_header = $('<div></div>', {
+            for (var i = 0; i < days.length; ++i) {
+                var day_header = $('<div></div>', {
                     class: "header-item " + days[i] + "-header"
                 });
-                let header_title = $('<h3>' + capitalize(days[i]) + '</h3>')
+                var header_title = $('<h3>' + capitalize(days[i]) + '</h3>')
 
                 day_header.append(header_title);
                 dayHeaderContainer.append(day_header);
             }
 
 
-            let days_wrapper = $('<div></div>', {
+            var days_wrapper = $('<div></div>', {
                 class: 'days-wrapper'
             });
 
-            let hourHeaderContainer = $('<div></div>', {
+            var hourHeaderContainer = $('<div></div>', {
                 class: 'hour-header'
             });
 
             days_wrapper.append(hourHeaderContainer);
 
-            for (let i = 0; i < hours.length; i++) {
-                let hour_header_item = $('<div></div>', {
+            for (var i = 0; i < hours.length; i++) {
+                var hour_header_item = $('<div></div>', {
                     class: 'hour-header-item ' + hours[i]
                 });
 
-                let header_title = $('<h5>' + hours[i] +'</h5>');
+                var header_title = $('<h5>' + hours[i] +'</h5>');
 
                 hour_header_item.append(header_title);
                 hourHeaderContainer.append(hour_header_item);
@@ -106,13 +105,13 @@
 
 
 
-            for(let i = 0; i < days.length; i++) {
-                let day = $('<div></div>', {
+            for(var i = 0; i < days.length; i++) {
+                var day = $('<div></div>', {
                     class: "day " + days[i]
                 });
 
-                for(let j = 0; j < hours.length; j++) {
-                    let hour = $('<div></div>', {
+                for(var j = 0; j < hours.length; j++) {
+                    var hour = $('<div></div>', {
                         class: "hour " + hours[j]
                     });
 
@@ -251,7 +250,7 @@
                     $(this).addClass('hover');
                 }
                 else {
-                    if (deletionMode) {
+                    if (devarionMode) {
                         $(this).removeClass('selected');
                     }
                     else {
@@ -265,7 +264,7 @@
                 if ($(this).hasClass('selected')) {
                     schedule.trigger('selectionremoved')
                     $(this).removeClass('selected');
-                    deletionMode = true;
+                    devarionMode = true;
                 }
                 else {
                     schedule.trigger('selectionmade')
@@ -273,7 +272,7 @@
                 }
                 $(this).removeClass('hover');
             }).on('mouseup', function() {
-                deletionMode = false;
+                devarionMode = false;
                 mousedown = false;
                 clearFocus();
             }).on('mouseleave', function () {
@@ -285,19 +284,19 @@
         }
 
         function parseHours(string) {
-            let output = [];
+            var output = [];
 
-            let split = string.toUpperCase().split("-");
-            let startInt = parseInt(split[0].split(":")[0]);
-            let endInt = parseInt(split[1].split(":")[0]);
+            var split = string.toUpperCase().split("-");
+            var startInt = parseInt(split[0].split(":")[0]);
+            var endInt = parseInt(split[1].split(":")[0]);
 
-            let startHour = split[0].includes("PM") ? startInt + 12 : startInt;
-            let endHour = split[1].includes("PM") ? endInt + 12 : endInt;
+            var startHour = split[0].includes("PM") ? startInt + 12 : startInt;
+            var endHour = split[1].includes("PM") ? endInt + 12 : endInt;
 
-            let curHour = startHour;
+            var curHour = startHour;
 
             for (curHour; curHour <= endHour; curHour++) {
-                let parsedStr = "";
+                var parsedStr = "";
 
                 if (curHour > 12) {
                     parsedStr += (curHour-12).toString() + ":00PM";
@@ -320,16 +319,16 @@
         }
 
         function focusOn(day) {
-            let targetDayClass = $(day).attr('class').split('\ ')[1];
-            let dayContainer = $('.day');
+            var targetDayClass = $(day).attr('class').split('\ ')[1];
+            var dayContainer = $('.day');
 
-            for (let i = 0; i < dayContainer.length; i++) {
+            for (var i = 0; i < dayContainer.length; i++) {
                 if ($(dayContainer[i]).hasClass(targetDayClass)) {
                     continue;
                 }
 
-                let hours = $(dayContainer[i]).children();
-                for (let j = 0; j < hours.length; j++) {
+                var hours = $(dayContainer[i]).children();
+                for (var j = 0; j < hours.length; j++) {
                     $(hours[j]).addClass('disabled');
                 }
             }
@@ -337,17 +336,17 @@
             $(day).on('mouseleave', function() {
                 clearFocus();
                 mousedown = false;
-                deletionMode = false;
+                devarionMode = false;
             });
         }
 
         function clearFocus() {
-            let dayContainer = $('.day');
+            var dayContainer = $('.day');
 
-            for (let i = 0; i < dayContainer.length; i++) {
+            for (var i = 0; i < dayContainer.length; i++) {
 
-                let hours = $(dayContainer[i]).children();
-                for (let j = 0; j < hours.length; j++) {
+                var hours = $(dayContainer[i]).children();
+                for (var j = 0; j < hours.length; j++) {
                     $(hours[j]).removeClass('disabled');
                 }
             }
