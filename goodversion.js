@@ -69,6 +69,11 @@ function focusOn(day) {
     });
 }
 
+function readInput() {
+    let dayContainer = $('.day');
+
+}
+
 function clearFocus() {
     let dayContainer = $('.day');
 
