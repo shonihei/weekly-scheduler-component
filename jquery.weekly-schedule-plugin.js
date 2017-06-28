@@ -15,7 +15,9 @@
             onRemoved: function(){} // handler called after removal
         }, callerSettings||{});
 
-        settings.hoursParsed = parseHours(settings.hours);
+        var parsed = parseHours(settings.hours);
+        settings.hoursParsed = parsed.str;
+        settings.hoursDetail = parsed.det;
 
         var mousedown = false;
         var devarionMode = false;
@@ -39,10 +41,56 @@
             return output;
         }
 
+        function dump() {
+            var dayContainer = $('.day');
+            var output = "";
+            for (var i = 0; i < dayContainer.length; i++) {
+                var curDay = $(dayContainer[i]).data('day');
+                var hoursContainer = $(dayContainer[i]).children();
+                var on = false;
+
+                var selected = [];
+                for (var j = 0; j < hoursContainer.length; j++) {
+                    let cur = $(hoursContainer[j]);
+                    let curSelected = $(cur).hasClass('selected');
+                    let next = $(cur).next();
+                    let nextSelected = $(next).hasClass('selected');
+
+                    if (next.length == 0 && curSelected) {
+                        on = false;
+                        selected.push($(cur));
+                        output += curDay + " " +
+                                  $(selected[0]).data('start') + ", " + curDay +
+                                  " " +$(selected[selected.length - 1]).data('end')
+                                  + ", ";
+                        selected = [];
+                    }
+                    else if (!on && curSelected) {
+                        on = true;
+                        selected.push($(cur));
+                    } else if (on && curSelected) {
+                        selected.push($(cur));
+                    } else if (on && !curSelected) {
+                        on = false;
+                        output += curDay + " " +
+                                  $(selected[0]).data('start') + ", " + curDay +
+                                  " " +$(selected[selected.length - 1]).data('end')
+                                  + ", ";
+                        selected = [];
+                    }
+                }
+
+            }
+            return output;
+        }
+
         if (typeof callerSettings == 'string') {
             switch (callerSettings) {
                 case 'getSelectedHour':
                     return getSelectedHour();
+                    break;
+                case 'dump':
+                    return dump();
                     break;
                 default:
                     throw 'Weekly schedule method unrecognized!'
@@ -52,6 +100,7 @@
         else {
             var days = settings.days; // option
             var hours = settings.hoursParsed; // option
+            var det = settings.hoursDetail;
 
             $(schedule).addClass('schedule');
 
@@ -110,10 +159,15 @@
                     class: "day " + days[i]
                 });
 
+                $(day).data("day", days[i]);
+
                 for(var j = 0; j < hours.length; j++) {
                     var hour = $('<div></div>', {
-                        class: "hour " + hours[j]
+                        class: "hour " + hours[j],
                     });
+
+                    $(hour).data("start", det[j].start);
+                    $(hour).data("end", det[j].end);
 
                     day.append(hour);
                 }
@@ -285,6 +339,7 @@
 
         function parseHours(string) {
             var output = [];
+            var detail = [];
 
             var split = string.toUpperCase().split("-");
             var startInt = parseInt(split[0].split(":")[0]);
@@ -296,6 +351,10 @@
             var curHour = startHour;
 
             for (curHour; curHour <= endHour; curHour++) {
+                let detailedData = {
+                    start : curHour,
+                    end : curHour + 1,
+                };
                 var parsedStr = "";
 
                 if (curHour > 12) {
@@ -309,9 +368,13 @@
                 }
 
                 output.push(parsedStr);
+                detail.push(detailedData);
             }
 
-            return output;
+            return {
+                str: output,
+                det: detail,
+            };
         }
 
         function capitalize(string) {
