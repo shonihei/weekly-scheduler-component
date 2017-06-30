@@ -51,18 +51,18 @@
 
                 var selected = [];
                 for (var j = 0; j < hoursContainer.length; j++) {
-                    let cur = $(hoursContainer[j]);
-                    let curSelected = $(cur).hasClass('selected');
-                    let next = $(cur).next();
-                    let nextSelected = $(next).hasClass('selected');
+                    var cur = $(hoursContainer[j]);
+                    var curSelected = $(cur).hasClass('selected');
+                    var next = $(cur).next();
+                    var nextSelected = $(next).hasClass('selected');
 
                     if (next.length == 0 && curSelected) {
                         on = false;
                         selected.push($(cur));
                         output += curDay + " " +
-                                  $(selected[0]).data('start') + ", " + curDay +
+                                  $(selected[0]).data('start') + " start, " + curDay +
                                   " " +$(selected[selected.length - 1]).data('end')
-                                  + ", ";
+                                  + " end, ";
                         selected = [];
                     }
                     else if (!on && curSelected) {
@@ -73,9 +73,9 @@
                     } else if (on && !curSelected) {
                         on = false;
                         output += curDay + " " +
-                                  $(selected[0]).data('start') + ", " + curDay +
+                                  $(selected[0]).data('start') + " start, " + curDay +
                                   " " +$(selected[selected.length - 1]).data('end')
-                                  + ", ";
+                                  + " end, ";
                         selected = [];
                     }
                 }
@@ -299,9 +299,19 @@
                 return false;
             });
 
-            $('.hour').on('mouseenter', function() {
+            $('.hour').on('click', function() {
                 if (!mousedown) {
-                    $(this).addClass('hover');
+                    mousedown = true;
+                    focusOn($(this).parent());
+                    if ($(this).hasClass('selected')) {
+                        schedule.trigger('selectionremoved')
+                        $(this).removeClass('selected');
+                        devarionMode = true;
+                    }
+                    else {
+                        schedule.trigger('selectionmade')
+                        $(this).addClass('selected');
+                    }
                 }
                 else {
                     if (devarionMode) {
@@ -310,30 +320,63 @@
                     else {
                         $(this).addClass('selected');
                     }
-                }
-            }).on('mousedown', function() {
-                mousedown = true;
-                focusOn($(this).parent());
 
-                if ($(this).hasClass('selected')) {
-                    schedule.trigger('selectionremoved')
+                    clearFocus();
+                    mousedown = false;
+                    devarionMode = false;
+                }
+
+
+                $(this).removeClass('hover');
+            }).on('mouseenter', function() {
+                if (!mousedown) {
+                    $(this).addClass('hover');
+                }
+                else if (devarionMode) {
                     $(this).removeClass('selected');
-                    devarionMode = true;
                 }
                 else {
-                    schedule.trigger('selectionmade')
                     $(this).addClass('selected');
                 }
+            }).on('mouseleave', function() {
                 $(this).removeClass('hover');
-            }).on('mouseup', function() {
-                devarionMode = false;
-                mousedown = false;
-                clearFocus();
-            }).on('mouseleave', function () {
-                if (!mousedown) {
-                    $(this).removeClass('hover');
-                }
             });
+
+            // $('.hour').on('mouseenter', function() {
+            //     if (!mousedown) {
+            //         $(this).addClass('hover');
+            //     }
+            //     else {
+            //         if (devarionMode) {
+            //             $(this).removeClass('selected');
+            //         }
+            //         else {
+            //             $(this).addClass('selected');
+            //         }
+            //     }
+            // }).on('mousedown', function() {
+            //     mousedown = true;
+            //     focusOn($(this).parent());
+            //
+            //     if ($(this).hasClass('selected')) {
+            //         schedule.trigger('selectionremoved')
+            //         $(this).removeClass('selected');
+            //         devarionMode = true;
+            //     }
+            //     else {
+            //         schedule.trigger('selectionmade')
+            //         $(this).addClass('selected');
+            //     }
+            //     $(this).removeClass('hover');
+            // }).on('mouseup', function() {
+            //     devarionMode = false;
+            //     mousedown = false;
+            //     clearFocus();
+            // }).on('mouseleave', function () {
+            //     if (!mousedown) {
+            //         $(this).removeClass('hover');
+            //     }
+            // });
 
         }
 
@@ -351,7 +394,7 @@
             var curHour = startHour;
 
             for (curHour; curHour <= endHour; curHour++) {
-                let detailedData = {
+                var detailedData = {
                     start : curHour,
                     end : curHour + 1,
                 };
