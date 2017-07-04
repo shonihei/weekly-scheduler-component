@@ -11,6 +11,7 @@
             hoverColor: "#727bad", // Background color when hovered
             selectionColor: "#9aa7ee", // Background color when selected
             headerBackgroundColor: "transparent", // Background color of headers
+            triggerMethod: "click-and-drag", // Default selection method
             onSelected: function(){}, // handler called after selection
             onRemoved: function(){} // handler called after removal
         }, callerSettings||{});
@@ -101,6 +102,7 @@
             var days = settings.days; // option
             var hours = settings.hoursParsed; // option
             var det = settings.hoursDetail;
+            var triggerMethod = settings.triggerMethod;
 
             $(schedule).addClass('schedule');
 
@@ -300,10 +302,94 @@
                 return false;
             });
 
+            switch (triggerMethod) {
+                case "click-and-drag":
+                    initClickAndDrag();
+                    break;
+                case "click-hover-and-click":
+                    initClickHoverAndClick();
+                    break;
+                case "click-click":
+                    initClickClick();
+                    break;
+                default:
+
+            }
+        }
+
+        function initClickClick() {
+            var selectionMode = false;
+            var removalMode = false;
+            var start;
+            var end;
+            var startDay;
+            $('.hour').on('click', function() {
+                if (selectionMode || removalMode) {
+                    if ($(this).parent()[0] == startDay[0]) {
+
+                        end = $(this);
+
+                        var children = $(startDay).children();
+                        var beginSelection = false;
+
+                        var startVal1 = $(start).data("start");
+                        var startVal2 = $(this).data("start");
+
+                        if (startVal2 < startVal1) {
+                            end = start;
+                            start = $(this);
+                        }
+
+                        for (var i = 0; i < children.length; i++) {
+                            if (children[i] == start[0]) {
+                                beginSelection = true;
+                            }
+                            if (beginSelection) {
+                                if (selectionMode) {
+                                    $(children[i]).addClass('selected');
+                                }
+                                else if (removalMode) {
+                                    $(children[i]).removeClass('selected');
+                                }
+                            }
+                            if (children[i] == end[0]) {
+                                beginSelection = false;
+                            }
+                            clearFocus();
+                        }
+                    }
+                    start = null;
+                    startDay = null;
+                    selectionMode = false;
+                    removalMode = false;
+                }
+                else {
+                    focusOn($(this).parent(), false);
+                    if ($(this).hasClass('selected')) {
+                        selectionMode = false;
+                        removalMode = true;
+                        start = $(this);
+                        startDay = $(this).parent();
+                    }
+                    else {
+                        selectionMode = true;
+                        removeClass = false;
+                        start = $(this);
+                        startDay = $(this).parent();
+                    }
+                }
+            }).on('mouseenter', function() {
+                $(this).addClass('hover');
+            }).on('mouseleave', function() {
+                $(this).removeClass('hover');
+            });
+        }
+
+        function initClickHoverAndClick() {
             $('.hour').on('click', function() {
                 if (!mousedown) {
                     mousedown = true;
-                    focusOn($(this).parent());
+                    focusOn($(this).parent(), true);
                     if ($(this).hasClass('selected')) {
                         schedule.trigger('selectionremoved')
                         $(this).removeClass('selected');
@@ -342,43 +428,44 @@
             }).on('mouseleave', function() {
                 $(this).removeClass('hover');
             });
+        }
 
-            // $('.hour').on('mouseenter', function() {
-            //     if (!mousedown) {
-            //         $(this).addClass('hover');
-            //     }
-            //     else {
-            //         if (devarionMode) {
-            //             $(this).removeClass('selected');
-            //         }
-            //         else {
-            //             $(this).addClass('selected');
-            //         }
-            //     }
-            // }).on('mousedown', function() {
-            //     mousedown = true;
-            //     focusOn($(this).parent());
-            //
-            //     if ($(this).hasClass('selected')) {
-            //         schedule.trigger('selectionremoved')
-            //         $(this).removeClass('selected');
-            //         devarionMode = true;
-            //     }
-            //     else {
-            //         schedule.trigger('selectionmade')
-            //         $(this).addClass('selected');
-            //     }
-            //     $(this).removeClass('hover');
-            // }).on('mouseup', function() {
-            //     devarionMode = false;
-            //     mousedown = false;
-            //     clearFocus();
-            // }).on('mouseleave', function () {
-            //     if (!mousedown) {
-            //         $(this).removeClass('hover');
-            //     }
-            // });
+        function initClickAndDrag() {
+            $('.hour').on('mouseenter', function() {
+                if (!mousedown) {
+                    $(this).addClass('hover');
+                }
+                else {
+                    if (devarionMode) {
+                        $(this).removeClass('selected');
+                    }
+                    else {
+                        $(this).addClass('selected');
+                    }
+                }
+            }).on('mousedown', function() {
+                mousedown = true;
+                focusOn($(this).parent(), true);
 
+                if ($(this).hasClass('selected')) {
+                    schedule.trigger('selectionremoved')
+                    $(this).removeClass('selected');
+                    devarionMode = true;
+                }
+                else {
+                    schedule.trigger('selectionmade')
+                    $(this).addClass('selected');
+                }
+                $(this).removeClass('hover');
+            }).on('mouseup', function() {
+                devarionMode = false;
+                mousedown = false;
+                clearFocus();
+            }).on('mouseleave', function () {
+                if (!mousedown) {
+                    $(this).removeClass('hover');
+                }
+            });
         }
 
         function parseHours(string) {
@@ -425,7 +512,7 @@
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        function focusOn(day) {
+        function focusOn(day, autounfocus) {
             var targetDayClass = $(day).attr('class').split('\ ')[1];
             var dayContainer = $('.day');
 
@@ -439,12 +526,13 @@
                     $(hours[j]).addClass('disabled');
                 }
             }
-
-            $(day).on('mouseleave', function() {
-                clearFocus();
-                mousedown = false;
-                devarionMode = false;
-            });
+            if (autounfocus) {
+                $(day).on('mouseleave', function() {
+                    clearFocus();
+                    mousedown = false;
+                    devarionMode = false;
+                });
+            }
         }
 
         function clearFocus() {
